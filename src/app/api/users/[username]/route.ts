@@ -1,13 +1,13 @@
 // /api/users/[username]/route.ts
 
 import axios from "axios";
-import {  NextResponse } from "next/server";
+import {  NextRequest, NextResponse } from "next/server";
 
 const cache = new Map();
 const CACHE_DURATION = 15 * 60 * 1000;
 
 
-export default async function GET({ params }: { params: { username: string } }) {
+export  async function GET(req:NextRequest,{ params }: { params: { username: string } }) {
   const { username } = await params;
 
   if (!username) {
@@ -73,17 +73,15 @@ export default async function GET({ params }: { params: { username: string } }) 
     cache.set(username, { data: completeUserData, timestamp: Date.now() });
 
     return NextResponse.json(completeUserData);
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error("Error getting user details:", error);
-
-    if (axios.isAxiosError(error)) {
       if (error.response && error.response.status === 401) {
         return NextResponse.json(
           { error: "Unauthorized: Invalid or expired Twitter bearer token" },
           { status: 401 }
         );
       }
-    }
+    
 
     return NextResponse.json(
       { error: "An unexpected error occurred" },
