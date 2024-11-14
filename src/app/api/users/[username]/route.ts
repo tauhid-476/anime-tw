@@ -8,7 +8,8 @@ const cache = new Map();
 const CACHE_DURATION = 15 * 60 * 1000;
 
 
-export  async function GET(req:NextRequest,{ params }: { params: { username: string } }) {
+export  async function GET(req:NextRequest,{ params }: 
+  { params: Promise<{ username: string }>}) {
   const { username } = await params;
 
   if (!username) {
