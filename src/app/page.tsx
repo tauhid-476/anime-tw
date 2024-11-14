@@ -1,7 +1,7 @@
 "use client";
 
-import { useState}  from "react";
-import { Loader2, Search, X } from "lucide-react";
+import { useState } from "react";
+import { Heart, Loader2, Search, X } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import Link from "next/link";
 
 interface Character {
   mal_id: number
@@ -16,7 +17,7 @@ interface Character {
   name: string;
   image: string;
   images: {
-    jpg:{
+    jpg: {
       image_url: string
     }
   }
@@ -82,29 +83,29 @@ export default function Page() {
   };
 
   const generateMessage = async () => {
-   try {
-     setButtonLoading(true);
-     if (selectedCharacter && username) {
-       const userData = await axios.get(`/api/users/${username}`);
-       const message = await axios.post("/api/generate-message", {
-         userData: userData.data,
-         character: selectedCharacter.name,
-       });
-       setGeneratedMessage(message.data.analysis);
-       setIsMessageGenerated(true);
-     }
-     
-   } catch (error) {
-    console.log(error)
-   }finally{
-    setButtonLoading(false);
-   }
+    try {
+      setButtonLoading(true);
+      if (selectedCharacter && username) {
+        const userData = await axios.get(`/api/users/${username}`);
+        const message = await axios.post("/api/generate-message", {
+          userData: userData.data,
+          character: selectedCharacter.name,
+        });
+        setGeneratedMessage(message.data.analysis);
+        setIsMessageGenerated(true);
+      }
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setButtonLoading(false);
+    }
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto p-4 space-y-6">
-      <h1 className="text-center text-2xl font-semibold mb-4">
-        GET TO KNOW WHAT YOUR FAVORITE ANIME CHARACTER THINKS ABOUT YOU
+      <h1 className="text-center font-serif mt-2 text-2xl font-semibold mb-4">
+        GET TO KNOW WHAT YOUR FAVORITE ANIME CHARACTER THINKS ABOUT YOU!
       </h1>
 
       <div className="w-full max-w-md mx-auto space-y-4">
@@ -192,13 +193,13 @@ export default function Page() {
         </Button>
 
         {selectedCharacter && isMessageGenerated && (
-            <Card className="w-full p-6 bg-zinc-900 border-zinc-800 mt-6">
+          <Card className="w-full p-6 bg-zinc-900 border-zinc-800 mt-6">
             <CardContent className="p-0">
               <div className="flex flex-col items-center gap-6">
                 <img
-                     src={selectedCharacter.image}
-                     alt={selectedCharacter.name}
-                     className="h-60"
+                  src={selectedCharacter.image}
+                  alt={selectedCharacter.name}
+                  className="h-60"
                 />
                 <div className="space-y-2 text-center">
                   {generatedMessage && (
@@ -211,9 +212,28 @@ export default function Page() {
               </div>
             </CardContent>
           </Card>
-        
+
         )}
       </div>
+        <footer className="mt-auto pt-8 pb-4">
+    <div className="flex flex-col items-center justify-center space-y-2">
+      <div className="flex items-center space-x-2 font-serif">
+        <span>Made with</span>
+        <Heart className="h-4 w-4 text-red-500 animate-pulse" />
+        <span>by</span>
+        <Link 
+          href="https://twitter.com/tauhid_khan476" 
+          className="transition-colors font-medium underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Me
+        </Link>
+      </div>
+      hehe
+    </div>
+  </footer>
     </div>
   );
+
 }
