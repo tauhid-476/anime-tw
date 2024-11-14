@@ -1,13 +1,13 @@
 // /api/users/[username]/route.ts
 
 import axios from "axios";
-import { NextRequest, NextResponse } from "next/server";
+import {  NextResponse } from "next/server";
 
 const cache = new Map();
 const CACHE_DURATION = 15 * 60 * 1000;
 
 
-export async function GET(req: NextRequest, { params }: { params: { username: string } }) {
+export default async function GET({ params }: { params: { username: string } }) {
   const { username } = await params;
 
   if (!username) {
