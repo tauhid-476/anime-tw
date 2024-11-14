@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState}  from "react";
 import { Loader2, Search, X } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -23,13 +23,14 @@ interface Character {
 }
 
 export default function Page() {
-  const [query, setQuery] = React.useState("");
-  const [results, setResults] = React.useState<Character[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [selectedCharacter, setSelectedCharacter] = React.useState<Character | null>(null);
-  const [username, setUsername] = React.useState("");
-  const [generatedMessage, setGeneratedMessage] = React.useState("");
-  const [buttonLoading, setButtonLoading] = React.useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Character[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
+  const [username, setUsername] = useState("");
+  const [generatedMessage, setGeneratedMessage] = useState("");
+  const [isMessageGenerated, setIsMessageGenerated] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const searchAPI = async (value: string) => {
     setIsLoading(true);
     try {
@@ -73,6 +74,7 @@ export default function Page() {
     setSelectedCharacter(null);
     setQuery("");
     setGeneratedMessage("");
+    setButtonLoading(false);
   };
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,16 +82,23 @@ export default function Page() {
   };
 
   const generateMessage = async () => {
-    setButtonLoading(true);
-    if (selectedCharacter && username) {
-      const userData = await axios.get(`/api/users/${username}`);
-      const message = await axios.post("/api/generate-message", {
-        userData: userData.data,
-        character: selectedCharacter.name,
-      });
-      setGeneratedMessage(message.data.analysis);
-    }
+   try {
+     setButtonLoading(true);
+     if (selectedCharacter && username) {
+       const userData = await axios.get(`/api/users/${username}`);
+       const message = await axios.post("/api/generate-message", {
+         userData: userData.data,
+         character: selectedCharacter.name,
+       });
+       setGeneratedMessage(message.data.analysis);
+       setIsMessageGenerated(true);
+     }
+     
+   } catch (error) {
+    console.log(error)
+   }finally{
     setButtonLoading(false);
+   }
   };
 
   return (
@@ -104,7 +113,7 @@ export default function Page() {
             <div className="flex items-center border rounded-md pr-2 py-2 border-gray-700">
               <Avatar className="h-12 w-12 ml-2">
                 {selectedCharacter.image ? (
-                  <img className="h-12 w-12" src={selectedCharacter.image} alt="v" />
+                  <img className="h-12 w-12 object-cover" src={selectedCharacter.image} alt="v" />
                 ) : (
                   <AvatarFallback>{selectedCharacter.name.charAt(0)}</AvatarFallback>
                 )}
@@ -149,7 +158,7 @@ export default function Page() {
                     className="flex items-center gap-3 p-4 border border-gray-700 cursor-pointer"
                     onClick={() => handleCharacterSelect(character)}
                   >
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-12 w-12 object-cover">
                       {character.image ? (
                         <AvatarImage src={character.image} alt={character.name} />
                       ) : (
@@ -176,13 +185,13 @@ export default function Page() {
         />
 
         <Button onClick={generateMessage}
-          className={`w-full ${buttonLoading ? "bg-gray-400" : "bg-blue-600"}`}
+          className={`text-center ${buttonLoading ? "bg-gray-400" : "bg-gray-700"}`}
         >
           {buttonLoading && <Loader2 className="animate-spin mr-2" />}
           Generate
         </Button>
 
-        {selectedCharacter && (
+        {selectedCharacter && isMessageGenerated && (
             <Card className="w-full p-6 bg-zinc-900 border-zinc-800 mt-6">
             <CardContent className="p-0">
               <div className="flex flex-col items-center gap-6">
@@ -195,7 +204,7 @@ export default function Page() {
                   {generatedMessage && (
                     <div className="bg-zinc-800 p-4 rounded-lg mt-4 text-center">
                       <p className="text-zinc-100">{generatedMessage}</p>
-                      <h2 className="text-2xl font-bold text-zinc-100">~Character Name</h2>
+                      <h2 className="text-2xl font-bold text-zinc-100">~ {selectedCharacter.name}</h2>
                     </div>
                   )}
                 </div>

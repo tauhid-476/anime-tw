@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 const cache = new Map();
 const CACHE_DURATION = 15 * 60 * 1000;
 
+
 export async function GET(req: NextRequest, { params }: { params: { username: string } }) {
   const { username } = await params;
 
@@ -72,19 +73,21 @@ export async function GET(req: NextRequest, { params }: { params: { username: st
     cache.set(username, { data: completeUserData, timestamp: Date.now() });
 
     return NextResponse.json(completeUserData);
-  } catch (error:any) {
+  } catch (error: unknown) {
     console.error("Error getting user details:", error);
 
-    if (error.response && error.response.status === 401) {
-      return NextResponse.json(
-        { error: "Unauthorized: Invalid or expired Twitter bearer token" },
-        { status: 401 }
-      );
-    } else {
-      return NextResponse.json(
-        { error: "An unexpected error occurred" },
-        { status: 500 }
-      );
+    if (axios.isAxiosError(error)) {
+      if (error.response && error.response.status === 401) {
+        return NextResponse.json(
+          { error: "Unauthorized: Invalid or expired Twitter bearer token" },
+          { status: 401 }
+        );
+      }
     }
+
+    return NextResponse.json(
+      { error: "An unexpected error occurred" },
+      { status: 500 }
+    );
   }
 }
