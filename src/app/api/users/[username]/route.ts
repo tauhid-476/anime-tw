@@ -3,9 +3,7 @@
 import axios from "axios";
 import {  NextResponse,NextRequest } from "next/server";
 import { Error } from "@/types/ErrorType";
-
-const cache = new Map();
-const CACHE_DURATION = 15 * 60 * 1000;
+import { myCache } from "@/lib/node-cache";
 
 
 export  async function GET(req:NextRequest,{ params }: 
@@ -17,10 +15,10 @@ export  async function GET(req:NextRequest,{ params }:
   }
 
   const bearerToken = process.env.TWITTER_BEARER_TOKEN;
-  const cacheData = cache.get(username);
+  const cacheData = myCache.get(username);
 
-  if (cacheData && Date.now() - cacheData.timestamp < CACHE_DURATION) {
-    return NextResponse.json(cacheData.data);
+  if (cacheData) {
+    return NextResponse.json(cacheData);
   }
 
   try {
@@ -72,7 +70,7 @@ export  async function GET(req:NextRequest,{ params }:
     console.log(completeUserData);
     
 
-    cache.set(username, { data: completeUserData, timestamp: Date.now() });
+    myCache.set(username, { data: completeUserData });
 
     return NextResponse.json(completeUserData);
   } catch (error: unknown) {
