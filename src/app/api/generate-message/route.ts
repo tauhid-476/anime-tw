@@ -20,6 +20,9 @@ export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   const { userData, character } = await req.json();
+
+  console.log("userData", userData);
+  
   
 
   if (!userData || !character) {
@@ -34,7 +37,7 @@ export async function POST(req: NextRequest) {
       userData.public_metrics.followers_count > 0
         ? (
             userData.public_metrics.following_count /
-            userData.public_metrics.followers_count
+            userData.public_metrics.followers_count 
           ).toFixed(2)
         : "N/A";
   

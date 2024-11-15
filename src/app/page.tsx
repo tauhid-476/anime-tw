@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import Link from "next/link";
+import { Error } from "@/types/ErrorType";
 
 interface Character {
   mal_id: number
@@ -95,8 +96,14 @@ export default function Page() {
         setIsMessageGenerated(true);
       }
 
-    } catch (error) {
-      console.log(error)
+    } catch (error: unknown) {
+      const Error = error as Error;
+      // console.error('Error generating message:', error);
+      if (Error.response && Error.response.data && Error.response.data.error) {
+        console.error('API error:', Error.response.data.error);
+      } else {
+        console.error('Unexpected error:', error);
+      }
     } finally {
       setButtonLoading(false);
     }

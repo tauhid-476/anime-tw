@@ -18,6 +18,7 @@ export  async function GET(req:NextRequest,{ params }:
   const cacheData = myCache.get(username);
 
   if (cacheData) {
+    console.log("cacheData", cacheData);
     return NextResponse.json(cacheData);
   }
 
@@ -70,7 +71,7 @@ export  async function GET(req:NextRequest,{ params }:
     console.log(completeUserData);
     
 
-    myCache.set(username, { data: completeUserData });
+    myCache.set(username,  completeUserData );
 
     return NextResponse.json(completeUserData);
   } catch (error: unknown) {
