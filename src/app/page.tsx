@@ -198,7 +198,7 @@ export default function Page() {
           {buttonLoading && <Loader2 className="animate-spin mr-2" />}
           Generate
         </Button>
-
+        <p className="text-sm text-gray-400">&#40;If no results appear, please try again later. This is due to X API rate limits.&#41;</p>
         {selectedCharacter && isMessageGenerated && (
           <Card className="w-full p-6 bg-zinc-900 border-zinc-800 mt-6">
             <CardContent className="p-0">
