@@ -140,11 +140,12 @@ export default function Page() {
             <>
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search anime characters..."
+                placeholder="Search anime characters... "
                 className="pl-8 border-gray-700"
                 value={query}
                 onChange={handleSearch}
               />
+              <p className="text-sm text-gray-400 mt-4">&#40;Please copy paste your username without @&#41;</p>
             </>
           )}
         </div>
